@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -17,8 +16,10 @@ model User {
   createdAt DateTime     @default(now())
   
   // Relations
-  roomsCreated Room[]       @relation("RoomCreator")
-  memberships  RoomMember[]
+  roomsCreated        Room[]               @relation("RoomCreator")
+  memberships         RoomMember[]
+  expensesPaid        Expense[]           @relation("ExpensesPaidBy")
+  expenseParticipates ExpenseParticipant[]
 }
 
 model Room {
@@ -31,6 +32,7 @@ model Room {
   creator    User         @relation("RoomCreator", fields: [createdBy], references: [id])
   
   members    RoomMember[]
+  expenses   Expense[]
 }
 
 model RoomMember {
@@ -44,4 +46,33 @@ model RoomMember {
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([roomId, userId])
+}
+
+model Expense {
+  id        String   @id @default(cuid())
+  title     String
+  amount    Float
+  date      DateTime @default(now())
+
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  paidById  String
+  paidBy    User     @relation("ExpensesPaidBy", fields: [paidById], references: [id])
+
+  participants ExpenseParticipant[]
+
+  createdAt DateTime @default(now())
+}
+
+model ExpenseParticipant {
+  id         String  @id @default(cuid())
+  expenseId  String
+  userId     String
+  amountOwed Float
+
+  expense    Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([expenseId, userId])
 }
