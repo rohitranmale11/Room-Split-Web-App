@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String       @id @default(cuid())
+  name      String?
+  email     String       @unique
+  password  String?
+  avatar    String?
+  createdAt DateTime     @default(now())
+  
+  // Relations
+  roomsCreated Room[]       @relation("RoomCreator")
+  memberships  RoomMember[]
+}
+
+model Room {
+  id         String       @id @default(cuid())
+  roomName   String
+  inviteCode String       @unique @default(cuid())
+  createdAt  DateTime     @default(now())
+  
+  createdBy  String
+  creator    User         @relation("RoomCreator", fields: [createdBy], references: [id])
+  
+  members    RoomMember[]
+}
+
+model RoomMember {
+  id      String @id @default(cuid())
+  role    String @default("member") // "admin" or "member"
+  
+  roomId  String
+  userId  String
+  
+  room    Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, userId])
+}
