@@ -10,6 +10,10 @@ import {
   BarChart3,
   Bell,
   Settings,
+  TrendingUp,
+  PiggyBank,
+  Repeat,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -46,13 +50,33 @@ const sidebarNavItems: SidebarItem[] = [
     icon: Users,
   },
   {
+    title: "Income",
+    href: "/dashboard/income",
+    icon: TrendingUp,
+  },
+  {
+    title: "Budgets",
+    href: "/dashboard/budgets",
+    icon: PiggyBank,
+  },
+  {
+    title: "Subscriptions",
+    href: "/dashboard/subscriptions",
+    icon: Repeat,
+  },
+  {
     title: "Analytics",
     href: "/dashboard/analytics",
     icon: BarChart3,
   },
   {
-    title: "Notifications",
-    href: "/dashboard/notifications",
+    title: "Reports",
+    href: "/dashboard/reports",
+    icon: FileText,
+  },
+  {
+    title: "Activity",
+    href: "/dashboard/activity",
     icon: Bell,
   },
   {
@@ -62,7 +86,13 @@ const sidebarNavItems: SidebarItem[] = [
   },
 ];
 
-export function SidebarNav({ collapsed = false }: { collapsed?: boolean }) {
+export function SidebarNav({
+  collapsed = false,
+  onNavigate,
+}: {
+  collapsed?: boolean;
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
 
   return (
@@ -74,11 +104,12 @@ export function SidebarNav({ collapsed = false }: { collapsed?: boolean }) {
           <Link
             key={item.href}
             href={item.href}
+            onClick={onNavigate}
           >
             <span
               className={cn(
-                "group flex items-center rounded-xl px-3 py-2 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900",
-                active && "bg-slate-900 text-slate-50 shadow-sm shadow-slate-900/5",
+                "group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
+                active && "bg-primary text-primary-foreground shadow-sm",
                 collapsed && "justify-center px-2"
               )}
             >

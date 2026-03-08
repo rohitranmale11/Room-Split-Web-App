@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createRoom } from "@/app/actions/rooms";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +16,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+const CURRENCIES = ["USD", "INR", "EUR", "GBP"];
+
 export function CreateRoomForm() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -26,8 +29,11 @@ export function CreateRoomForm() {
     try {
       await createRoom(formData);
       setOpen(false);
+      toast.success("Room created successfully");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "An error occurred");
+      const msg = e instanceof Error ? e.message : "An error occurred";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -36,28 +42,57 @@ export function CreateRoomForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Create Room</Button>
+        <Button size="sm" className="rounded-lg text-base">Create Room</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <form action={onSubmit}>
           <DialogHeader>
-            <DialogTitle>Create Room</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-xl">Create Room</DialogTitle>
+            <DialogDescription className="text-base">
               Create a new room to start splitting expenses with your flatmates.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            {error && <div className="text-sm font-medium text-red-500">{error}</div>}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="roomName" className="text-right">
-                Name
-              </Label>
-              <Input id="roomName" name="roomName" placeholder="e.g. Pune Flat" className="col-span-3" required />
+            {error && (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/50 dark:text-red-200">
+                {error}
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="roomName" className="text-base">Room name</Label>
+              <Input
+                id="roomName"
+                name="roomName"
+                placeholder="e.g. Pune Flat"
+                className="h-10 text-base"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-base">Description (optional)</Label>
+              <Input
+                id="description"
+                name="description"
+                placeholder="Brief description of the room"
+                className="h-10 text-base"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="currency" className="text-base">Currency</Label>
+              <select
+                id="currency"
+                name="currency"
+                className="flex h-10 w-full rounded-lg border border-input bg-background px-3 text-base"
+              >
+                {CURRENCIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Save Room"}
+            <Button type="submit" disabled={loading} className="text-base">
+              {loading ? "Creating..." : "Create Room"}
             </Button>
           </DialogFooter>
         </form>

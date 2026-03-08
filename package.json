@@ -2,6 +2,9 @@
   "name": "roomsplit",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "npx ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
@@ -27,6 +30,8 @@
     "next-themes": "^0.4.6",
     "react": "^18",
     "react-dom": "^18",
+    "recharts": "^3.8.0",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7"
   },
@@ -39,6 +44,7 @@
     "postcss": "^8",
     "prisma": "^5.22.0",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

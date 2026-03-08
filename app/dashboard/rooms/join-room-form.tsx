@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { joinRoom } from "@/app/actions/rooms";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,10 +25,13 @@ export function JoinRoomForm() {
     setLoading(true);
     setError("");
     try {
-      await joinRoom(formData);
+      const { room } = await joinRoom(formData);
       setOpen(false);
+      toast.success(`Joined ${room.roomName} successfully`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "An error occurred");
+      const msg = e instanceof Error ? e.message : "An error occurred";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -36,28 +40,36 @@ export function JoinRoomForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Join Room</Button>
+        <Button variant="outline" size="sm" className="rounded-lg text-base">Join Room</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <form action={onSubmit}>
           <DialogHeader>
-            <DialogTitle>Join Room</DialogTitle>
-            <DialogDescription>
-              Enter the invite code shared by your flatmate to join the room.
+            <DialogTitle className="text-xl">Join Room</DialogTitle>
+            <DialogDescription className="text-base">
+              Enter the invite code or paste the invite link shared by your flatmate.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            {error && <div className="text-sm font-medium text-red-500">{error}</div>}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="inviteCode" className="text-right">
-                Invite Code
-              </Label>
-              <Input id="inviteCode" name="inviteCode" placeholder="Paste code here" className="col-span-3" required />
+            {error && (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/50 dark:text-red-200">
+                {error}
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="inviteCode" className="text-base">Invite code</Label>
+              <Input
+                id="inviteCode"
+                name="inviteCode"
+                placeholder="Paste code here"
+                className="h-10 text-base font-mono"
+                required
+              />
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Joining..." : "Join"}
+            <Button type="submit" disabled={loading} className="text-base">
+              {loading ? "Joining..." : "Join Room"}
             </Button>
           </DialogFooter>
         </form>

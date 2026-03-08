@@ -2,7 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { compare } from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -21,7 +21,7 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await prisma.user.findUnique({
+        const user = await db.user.findUnique({
           where: { email: credentials.email }
         });
 
@@ -51,9 +51,25 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, account, trigger, session }) {
       if (user) {
-        token.id = user.id;
+        if (account?.provider === "google" && user.email) {
+          const dbUser = await db.user.upsert({
+            where: { email: user.email },
+            create: {
+              email: user.email,
+              name: user.name ?? null,
+              avatar: user.image ?? null,
+            },
+            update: {
+              name: user.name ?? undefined,
+              avatar: user.image ?? undefined,
+            },
+          });
+          token.id = dbUser.id;
+        } else {
+          token.id = user.id;
+        }
       }
       if (trigger === "update" && session?.name) {
         token.name = session.name;

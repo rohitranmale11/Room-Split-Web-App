@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 function SkeletonBlock({ className }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse rounded-md bg-slate-200/70 dark:bg-slate-700/70 ${className}`}
+      className={`animate-pulse rounded-md bg-muted ${className}`}
     />
   );
 }
@@ -15,9 +15,9 @@ export default function DashboardLoading() {
         <SkeletonBlock className="h-6 w-40" />
         <SkeletonBlock className="h-4 w-64" />
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i} className="border-slate-200/80">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Card key={i}>
             <CardHeader className="space-y-2">
               <SkeletonBlock className="h-3 w-24" />
               <SkeletonBlock className="h-4 w-16" />
@@ -28,7 +28,7 @@ export default function DashboardLoading() {
           </Card>
         ))}
       </div>
-      <Card className="border-slate-200/80">
+      <Card>
         <CardContent className="space-y-3 py-5">
           <SkeletonBlock className="h-4 w-32" />
           <SkeletonBlock className="h-4 w-full" />
