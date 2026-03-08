@@ -1,5 +1,6 @@
 "use client";
 
+import type { LegacyRef } from "react";
 import { useState, useEffect, useRef } from "react";
 
 const FEATURES = [
@@ -54,36 +55,66 @@ const PERKS = [
   "Export-ready summaries",
 ];
 
-function useInView(threshold = 0.15) {
-  const ref = useRef(null);
+type AnimCounterProps = {
+  target: number;
+  prefix?: string;
+  suffix?: string;
+};
+
+function useInView(threshold: number = 0.15): [React.RefObject<HTMLElement>, boolean] {
+  const ref = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setInView(true);
+      },
+      { threshold }
+    );
+
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [threshold]);
+
   return [ref, inView];
 }
 
-function AnimCounter({ target, prefix = "", suffix = "" }) {
-  const [val, setVal] = useState(0);
+function AnimCounter({ target, prefix = "", suffix = "" }: AnimCounterProps) {
+  const [val, setVal] = useState<number>(0);
   const [ref, inView] = useInView(0.3);
+
   useEffect(() => {
     if (!inView) return;
-    let start = null;
+
+    let start: number | null = null;
     const duration = 1400;
-    const step = (ts) => {
+
+    const step = (ts: number) => {
       if (!start) start = ts;
+
       const p = Math.min((ts - start) / duration, 1);
       const eased = 1 - Math.pow(1 - p, 4);
+
       setVal(Math.round(eased * target));
+
       if (p < 1) requestAnimationFrame(step);
     };
+
     requestAnimationFrame(step);
   }, [inView, target]);
-  return <span ref={ref}>{prefix}{val.toLocaleString()}{suffix}</span>;
+
+  return (
+    <span ref={ref}>
+      {prefix}
+      {val.toLocaleString()}
+      {suffix}
+    </span>
+  );
 }
 
 export default function RoomSplitLanding() {
@@ -315,7 +346,7 @@ export default function RoomSplitLanding() {
             <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 105%,#f1f5f9 0%,transparent 55%)" }} />
           </div>
 
-          <div ref={heroRef} style={{ maxWidth: 1160, margin: "0 auto", padding: "0 28px", position: "relative", zIndex: 1 }}>
+          <div ref={heroRef as LegacyRef<HTMLDivElement>} style={{ maxWidth: 1160, margin: "0 auto", padding: "0 28px", position: "relative", zIndex: 1 }}>
             <div className="hero-grid" style={{ display: "grid", gridTemplateColumns: "1.05fr 1fr", gap: 60, alignItems: "center" }}>
 
               {/* Left copy */}
@@ -459,7 +490,7 @@ export default function RoomSplitLanding() {
         {/* ── FEATURES ── */}
         <section id="features" style={{ padding: "96px 0", background: "#f1f5f9" }}>
           <div style={{ maxWidth: 1160, margin: "0 auto", padding: "0 28px" }}>
-            <div ref={featRef} style={{ textAlign: "center", marginBottom: 56 }}>
+            <div ref={featRef as LegacyRef<HTMLDivElement>} style={{ textAlign: "center", marginBottom: 56 }}>
               {featIn && <>
                 <span className="section-label animate-fadeup">Features</span>
                 <h2 className="animate-fadeup d1" style={{ fontSize: "clamp(28px,4vw,46px)", fontWeight: 800, lineHeight: 1.15, letterSpacing: "-0.03em", color: "#0f172a", marginBottom: 14 }}>
@@ -491,7 +522,7 @@ export default function RoomSplitLanding() {
         {/* ── HOW IT WORKS ── */}
         <section id="how-it-works" style={{ padding: "96px 0", background: "#fff" }}>
           <div style={{ maxWidth: 1160, margin: "0 auto", padding: "0 28px" }}>
-            <div ref={howRef} style={{ textAlign: "center", marginBottom: 56 }}>
+            <div ref={howRef as LegacyRef<HTMLDivElement>} style={{ textAlign: "center", marginBottom: 56 }}>
               {howIn && <>
                 <span className="section-label animate-fadeup">How it works</span>
                 <h2 className="animate-fadeup d1" style={{ fontSize: "clamp(28px,4vw,46px)", fontWeight: 800, lineHeight: 1.15, letterSpacing: "-0.03em", color: "#0f172a", marginBottom: 14 }}>
@@ -530,7 +561,7 @@ export default function RoomSplitLanding() {
         {/* ── PRICING ── */}
         <section id="pricing" style={{ padding: "96px 0", background: "#f8fafc" }}>
           <div style={{ maxWidth: 1160, margin: "0 auto", padding: "0 28px" }}>
-            <div ref={priceRef} style={{ textAlign: "center", marginBottom: 56 }}>
+            <div ref={priceRef as LegacyRef<HTMLDivElement>} style={{ textAlign: "center", marginBottom: 56 }}>
               {priceIn && <>
                 <span className="section-label animate-fadeup">Pricing</span>
                 <h2 className="animate-fadeup d1" style={{ fontSize: "clamp(28px,4vw,46px)", fontWeight: 800, lineHeight: 1.15, letterSpacing: "-0.03em", color: "#0f172a", marginBottom: 14 }}>
@@ -583,7 +614,7 @@ export default function RoomSplitLanding() {
         {/* ── CTA ── */}
         <section style={{ padding: "56px 28px 80px" }}>
           <div style={{ maxWidth: 1160, margin: "0 auto" }}>
-            <div ref={ctaRef} className={`cta-box ${ctaIn ? "animate-fadeup" : ""}`}>
+            <div ref={ctaRef as LegacyRef<HTMLDivElement>} className={`cta-box ${ctaIn ? "animate-fadeup" : ""}`}>
               <div className="cta-glow" style={{ width: 500, height: 500, background: "radial-gradient(circle,rgba(37,99,235,0.22) 0%,transparent 70%)", top: -150, right: -80 }} />
               <div className="cta-glow" style={{ width: 300, height: 300, background: "radial-gradient(circle,rgba(14,165,233,0.15) 0%,transparent 70%)", bottom: -80, left: 80 }} />
 
@@ -622,8 +653,8 @@ export default function RoomSplitLanding() {
           <div style={{ display: "flex", gap: 28 }}>
             {["Features", "Pricing", "Login"].map(l => (
               <a key={l} href={`#${l.toLowerCase()}`} style={{ fontSize: 13, color: "#64748b", fontWeight: 500, transition: "color 0.2s" }}
-                onMouseEnter={e => e.target.style.color = "#0f172a"}
-                onMouseLeave={e => e.target.style.color = "#64748b"}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "#0f172a")}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "#64748b")}
               >{l}</a>
             ))}
           </div>

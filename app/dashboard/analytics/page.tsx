@@ -46,21 +46,21 @@ export default async function AnalyticsPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium">Savings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p
-              className={`text-2xl font-semibold ${
-                data.savings >= 0
-                  ? "text-emerald-600 dark:text-emerald-400"
-                  : "text-rose-600 dark:text-rose-400"
-              }`}
-            >
-              ${data.savings.toFixed(2)}
-            </p>
-          </CardContent>
-        </Card>
+  <CardHeader className="pb-2">
+    <CardTitle className="text-base font-medium">Savings</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <p
+      className={`text-2xl font-semibold ${
+        (data.savings ?? 0) >= 0
+          ? "text-emerald-600 dark:text-emerald-400"
+          : "text-rose-600 dark:text-rose-400"
+      }`}
+    >
+      ${(data.savings ?? 0).toFixed(2)}
+    </p>
+  </CardContent>
+</Card>
       </div>
 
       <AnalyticsCharts
