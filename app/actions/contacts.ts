@@ -31,7 +31,7 @@ export async function createContact(formData: FormData) {
 
   // Check for duplicate email if provided
   if (email) {
-    const existingContact = await db.Contact.findUnique({
+    const existingContact = await db.contact.findUnique({
       where: {
         ownerId_email: {
           ownerId: session.user.id,
@@ -45,7 +45,7 @@ export async function createContact(formData: FormData) {
     }
   }
 
-  const contact = await db.Contact.create({
+  const contact = await db.contact.create({
     data: {
       name: name.trim(),
       phone,
@@ -85,7 +85,7 @@ export async function updateContact(formData: FormData) {
   }
 
   // Verify contact belongs to user
-  const existingContact = await db.Contact.findUnique({
+  const existingContact = await db.contact.findUnique({
     where: { id: contactId }
   });
 
@@ -95,7 +95,7 @@ export async function updateContact(formData: FormData) {
 
   // Check for duplicate email if provided and different from current
   if (email && email !== existingContact.email) {
-    const duplicateContact = await db.Contact.findUnique({
+    const duplicateContact = await db.contact.findUnique({
       where: {
         ownerId_email: {
           ownerId: session.user.id,
@@ -109,7 +109,7 @@ export async function updateContact(formData: FormData) {
     }
   }
 
-  const contact = await db.Contact.update({
+  const contact = await db.contact.update({
     where: { id: contactId },
     data: {
       name: name.trim(),
@@ -142,7 +142,7 @@ export async function deleteContact(formData: FormData) {
   const contactId = formData.get("contactId") as string;
 
   // Verify contact belongs to user
-  const existingContact = await db.Contact.findUnique({
+  const existingContact = await db.contact.findUnique({
     where: { id: contactId }
   });
 
@@ -150,7 +150,7 @@ export async function deleteContact(formData: FormData) {
     throw new Error("Contact not found or access denied");
   }
 
-  const contact = await db.Contact.delete({
+  const contact = await db.contact.delete({
     where: { id: contactId },
   });
 
@@ -173,7 +173,7 @@ export async function getContacts() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return [];
 
-  const contacts = await db.Contact.findMany({
+  const contacts = await db.contact.findMany({
     where: { ownerId: session.user.id },
     orderBy: { createdAt: "desc" },
   });
