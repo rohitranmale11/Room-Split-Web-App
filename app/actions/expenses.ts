@@ -6,7 +6,13 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { createActivity } from "@/lib/activity";
 
-type ParticipantInput = { userId: string; amountOwed?: number; percentage?: number };
+type ParticipantInput = {
+  userId?: string;
+  contactId?: string;
+  amountOwed?: number;
+  percentage?: number;
+  name?: string; // For contacts
+};
 
 function parseParticipants(
   members: { userId: string }[],

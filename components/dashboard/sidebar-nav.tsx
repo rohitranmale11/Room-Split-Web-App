@@ -10,10 +10,8 @@ import {
   BarChart3,
   Bell,
   Settings,
-  TrendingUp,
   PiggyBank,
-  Repeat,
-  FileText,
+  Contact,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,14 +28,19 @@ const sidebarNavItems: SidebarItem[] = [
     icon: LayoutDashboard,
   },
   {
+    title: "Personal Expenses",
+    href: "/dashboard/personal-expenses",
+    icon: CreditCard,
+  },
+  {
+    title: "Contacts",
+    href: "/dashboard/contacts",
+    icon: Contact,
+  },
+  {
     title: "Rooms",
     href: "/dashboard/rooms",
     icon: Users,
-  },
-  {
-    title: "Expenses",
-    href: "/dashboard/expenses",
-    icon: CreditCard,
   },
   {
     title: "Balances",
@@ -45,34 +48,19 @@ const sidebarNavItems: SidebarItem[] = [
     icon: Scale,
   },
   {
-    title: "Members",
-    href: "/dashboard/members",
-    icon: Users,
-  },
-  {
-    title: "Income",
-    href: "/dashboard/income",
-    icon: TrendingUp,
-  },
-  {
     title: "Budgets",
     href: "/dashboard/budgets",
     icon: PiggyBank,
   },
   {
-    title: "Subscriptions",
-    href: "/dashboard/subscriptions",
-    icon: Repeat,
+    title: "Calendar",
+    href: "/dashboard/calendar",
+    icon: BarChart3,
   },
   {
     title: "Analytics",
     href: "/dashboard/analytics",
     icon: BarChart3,
-  },
-  {
-    title: "Reports",
-    href: "/dashboard/reports",
-    icon: FileText,
   },
   {
     title: "Activity",

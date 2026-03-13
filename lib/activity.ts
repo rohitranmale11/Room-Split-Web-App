@@ -6,7 +6,15 @@ export type ActivityType =
   | "EXPENSE_ADDED"
   | "EXPENSE_DELETED"
   | "SETTLEMENT_COMPLETED"
-  | "BUDGET_EXCEEDED";
+  | "BUDGET_EXCEEDED"
+  | "CONTACT_ADDED"
+  | "CONTACT_UPDATED"
+  | "CONTACT_DELETED"
+  | "PERSONAL_EXPENSE_ADDED"
+  | "PERSONAL_EXPENSE_UPDATED"
+  | "PERSONAL_EXPENSE_DELETED"
+  | "BUDGET_CREATED"
+  | "BUDGET_UPDATED";
 
 export async function createActivity(
   type: ActivityType,

@@ -25,6 +25,9 @@ model User {
   budgets             Budget[]
   subscriptions       Subscription[]
   activities          Activity[]           @relation("ActivityActor")
+  personalExpenses    PersonalExpense[]    @relation("PersonalExpenses")
+  userBudgets         UserBudget[]         @relation("UserBudgets")
+  contacts            Contact[]           @relation("Contacts")
 }
 
 model Room {
@@ -65,10 +68,11 @@ model Category {
   type   String  @default("expense") // "expense" | "income"
   roomId String? // null = default (app-wide), set = room-specific
 
-  room      Room?     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  room      Room?           @relation(fields: [roomId], references: [id], onDelete: Cascade)
   expenses  Expense[]
   incomes   Income[]
   budgets   Budget[]
+  personalExpenses PersonalExpense[] @relation("PersonalExpenses")
 }
 
 model Expense {
@@ -96,14 +100,17 @@ model Expense {
 model ExpenseParticipant {
   id         String  @id @default(cuid())
   expenseId  String
-  userId     String
+  userId     String?
+  contactId  String?
   amountOwed Float
   percentage Float? // for PERCENTAGE split, store original %
 
   expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contact  Contact? @relation(fields: [contactId], references: [id], onDelete: Cascade)
 
   @@unique([expenseId, userId])
+  @@unique([expenseId, contactId])
 }
 
 model Settlement {
@@ -183,4 +190,48 @@ model Activity {
   user      User     @relation("ActivityActor", fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+}
+
+model PersonalExpense {
+  id         String   @id @default(cuid())
+  amount     Float
+  note       String?
+  date       DateTime @default(now())
+  
+  userId     String
+  user       User     @relation("PersonalExpenses", fields: [userId], references: [id], onDelete: Cascade)
+
+  categoryId String?
+  category   Category? @relation("PersonalExpenses", fields: [categoryId], references: [id], onDelete: SetNull)
+
+  createdAt  DateTime @default(now())
+}
+
+model UserBudget {
+  id     String  @id @default(cuid())
+  amount Float   // monthly budget limit
+  month  Int     // 1-12
+  year   Int     // e.g. 2024
+
+  userId String
+  user   User    @relation("UserBudgets", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, month, year])
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String?
+  email     String?
+  createdAt DateTime @default(now())
+
+  ownerId String
+  owner   User @relation("Contacts", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  expenseParticipants ExpenseParticipant[]
+
+  @@unique([ownerId, email])
 }
